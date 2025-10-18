@@ -1,6 +1,18 @@
 "use client"
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+
+function LoginMessages() {
+  const search = useSearchParams()
+  const info = search.get('info')
+  const err = search.get('error')
+  return (
+    <>
+      {info && <div className="mb-4 text-sm text-emerald-300">{info}</div>}
+      {err && <div className="mb-4 text-sm text-rose-400">{err}</div>}
+    </>
+  )
+}
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
@@ -8,7 +20,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const search = useSearchParams()
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,17 +43,14 @@ export default function LoginPage() {
     }
   }
 
-  const info = search.get('info')
-  const err = search.get('error')
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="card w-full max-w-md p-6">
         <h1 className="text-2xl font-semibold mb-1">Вход в админку</h1>
         <p className="text-sm text-muted mb-6">Доступ только для администраторов</p>
-
-        {info && <div className="mb-4 text-sm text-emerald-300">{info}</div>}
-        {err && <div className="mb-4 text-sm text-rose-400">{err}</div>}
+        <Suspense fallback={null}>
+          <LoginMessages />
+        </Suspense>
         {error && <div className="mb-4 text-sm text-rose-400">{error}</div>}
 
         <form onSubmit={onSubmit} className="space-y-4">
@@ -62,4 +70,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
