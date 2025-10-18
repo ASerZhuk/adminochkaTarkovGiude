@@ -6,8 +6,8 @@ import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 
 export const metadata: Metadata = {
-  title: "AFT Admin",
-  description: "Admin panel for Assist From Tarkov",
+  title: "Tarkov Guide Adminka",
+  description: "Admin panel for Tarkov Guide",
 };
 
 export default function RootLayout({
