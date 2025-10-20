@@ -14,7 +14,7 @@ export const NaviLink: NaviItem[] = [
   },
   {
     href: "/dashboard/awards/raw",
-    label: "Награды",
+    label: "Награды от трейдеров",
   },
   {
     href: "/dashboard/awards/items",

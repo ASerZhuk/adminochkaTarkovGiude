@@ -3,23 +3,44 @@
 import { Input, Table } from "@mantine/core";
 import { useMemo, useState } from "react";
 import type { IQuest } from "../../../../types/questTypes";
+import { useRouter } from "next/navigation";
 
 interface AwardsRawClientProps {
   quests: IQuest[];
 }
 
 export default function AwardsRawClient({ quests }: AwardsRawClientProps) {
+  const router = useRouter();
   const [qFilter, setQFilter] = useState("");
   const filtered = useMemo(
-    () => (quests ?? []).filter((q) => q.name.toLowerCase().includes(qFilter.toLowerCase())),
+    () =>
+      (quests ?? []).filter((q) =>
+        q.name.toLowerCase().includes(qFilter.toLowerCase())
+      ),
     [quests, qFilter]
   );
 
   const rows = filtered.map((q) => {
     const rewardStrings: string[] = q?.award_raw?.data?.reward_strings ?? [];
     const text = rewardStrings.length > 0 ? rewardStrings.join("\n") : "-";
+    const href = `/dashboard/awards/raw/${q.id}`;
+    const onRowClick = () => router.push(href);
+    const onRowKeyDown = (e: React.KeyboardEvent<HTMLTableRowElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        router.push(href);
+      }
+    };
+
     return (
-      <Table.Tr key={`q-${q.id}`}>
+      <Table.Tr
+        key={`q-${q.id}`}
+        onClick={onRowClick}
+        onKeyDown={onRowKeyDown}
+        role="link"
+        tabIndex={0}
+        style={{ cursor: "pointer" }}
+        data-href={href}>
         <Table.Td>{q.id}</Table.Td>
         <Table.Td>{q.name}</Table.Td>
         <Table.Td style={{ whiteSpace: "pre-wrap" }}>{text}</Table.Td>

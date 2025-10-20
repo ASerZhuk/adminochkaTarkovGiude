@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Group, Input } from "@mantine/core";
+import { Badge, Button, Divider, Group, Input, Paper, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 import type { IGoals } from "../../../../types/goalsTypes";
@@ -106,14 +106,24 @@ export default function GoalsClientId({ goals, questId }: GoalsClientIdProps) {
   };
 
   return (
-    <section className="grid grid-cols-2 gap-6">
-      <div className="col-span-1 ">
+    <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="lg:col-span-2">
+        <Group justify="space-between" align="center">
+          <div>
+            <Title order={3}>Редактирование целей квеста</Title>
+          </div>
+          <Badge variant="light" color="blue">Quest ID: {questId}</Badge>
+        </Group>
+        <Divider my="sm" />
+      </div>
+
+      <Paper withBorder p="md" radius="md" className="lg:col-span-1">
         {items.map((goal, index) => (
           <Input.Wrapper
             key={`exist-${goal.id}`}
             label={`Название цели №${index + 1}`}
             size="md"
-            className="mb-8">
+            className="mb-6">
             <Group gap="sm" wrap="nowrap" align="center">
               <Input
                 placeholder="Введите название цели"
@@ -129,13 +139,15 @@ export default function GoalsClientId({ goals, questId }: GoalsClientIdProps) {
             </Group>
           </Input.Wrapper>
         ))}
+      </Paper>
 
+      <Paper withBorder p="md" radius="md" className="lg:col-span-1">
         {extraKeys.map((k, i) => (
           <Input.Wrapper
             key={k}
             label={`Название цели №${(items?.length ?? 0) + i + 1}`}
             size="md"
-            className="mb-8">
+            className="mb-6">
             <Group gap="sm" wrap="nowrap" align="center">
               <Input
                 placeholder="Введите название цели"
@@ -163,7 +175,7 @@ export default function GoalsClientId({ goals, questId }: GoalsClientIdProps) {
         ))}
 
         <Button onClick={addField}>Добавить цель</Button>
-      </div>
+      </Paper>
     </section>
   );
 }

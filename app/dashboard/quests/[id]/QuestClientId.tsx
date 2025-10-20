@@ -1,14 +1,18 @@
 "use client";
 
 import {
+  Badge,
   Button,
+  Divider,
+  Group,
   Input,
   MultiSelect,
   NativeSelect,
   NumberInput,
+  Paper,
   Select,
   Textarea,
-  Group,
+  Title,
 } from "@mantine/core";
 import { IQuest } from "../../../../types/questTypes";
 import { ITrader } from "../../../../types/traderTypes";
@@ -267,8 +271,17 @@ export default function QuestClientId({
     setSelectedMap(null);
   };
   return (
-    <section className="grid grid-cols-2 gap-6">
-      <div className="col-span-1">
+    <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="lg:col-span-2">
+        <Group justify="space-between" align="center">
+          <div>
+            <Title order={3}>Редактирование квеста</Title>
+          </div>
+        </Group>
+        <Divider my="sm" />
+      </div>
+
+      <Paper withBorder p="md" radius="md" className="lg:col-span-1">
         <Input.Wrapper
           label="Название квеста"
           withAsterisk
@@ -328,8 +341,9 @@ export default function QuestClientId({
           ref={guidesRef}
           autosize
         />
-      </div>
-      <div className="col-span-1">
+      </Paper>
+
+      <Paper withBorder p="md" radius="md" className="lg:col-span-1">
         <NumberInput
           value={form.values.level_req}
           size="md"
@@ -484,19 +498,21 @@ export default function QuestClientId({
           placeholder="Выберите следующие квесты"
           className="mt-8"
         />
-      </div>
-      <div className="col-span-2">
-        <Button
-          variant="filled"
-          size="md"
-          className="mr-4"
-          loading={saving}
-          onClick={handleSave}>
-          Сохранить
-        </Button>
-        <Button variant="filled" size="md" color="red" disabled>
-          Удалить
-        </Button>
+      </Paper>
+
+      <div className="lg:col-span-2">
+        <Group>
+          <Button
+            variant="filled"
+            size="md"
+            loading={saving}
+            onClick={handleSave}>
+            Сохранить
+          </Button>
+          <Button variant="filled" size="md" color="red" disabled>
+            Удалить
+          </Button>
+        </Group>
       </div>
     </section>
   );
