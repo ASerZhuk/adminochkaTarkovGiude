@@ -18,11 +18,11 @@ export const NaviLink: NaviItem[] = [
   },
   {
     href: "/dashboard/awards/items",
-    label: "Награды предметы",
+    label: "Награды (Предметы)",
   },
   {
     href: "/dashboard/awards/unlocks",
-    label: "Разблокируемые",
+    label: "Награды (Разблокирует)",
   },
   {
     href: "/dashboard/items",

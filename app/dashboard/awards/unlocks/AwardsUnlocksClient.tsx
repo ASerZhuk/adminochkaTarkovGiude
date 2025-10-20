@@ -4,32 +4,56 @@ import { Input, Table } from "@mantine/core";
 import { useMemo, useState } from "react";
 import type { IQuest } from "../../../../types/questTypes";
 import type { IAwardUnlocks } from "../../../../types/awardUnlocksTypes";
+import { useRouter } from "next/navigation";
 
 interface AwardsUnlocksClientProps {
   quests: IQuest[];
 }
 
-export default function AwardsUnlocksClient({ quests }: AwardsUnlocksClientProps) {
+export default function AwardsUnlocksClient({
+  quests,
+}: AwardsUnlocksClientProps) {
+  const router = useRouter();
   const [qFilter, setQFilter] = useState("");
   const filtered = useMemo(
-    () => (quests ?? []).filter((q) => q.name.toLowerCase().includes(qFilter.toLowerCase())),
+    () =>
+      (quests ?? []).filter((q) =>
+        q.name.toLowerCase().includes(qFilter.toLowerCase())
+      ),
     [quests, qFilter]
   );
 
   const rows = filtered.flatMap((q) => {
-    const unlocks: IAwardUnlocks[] = Array.isArray(q.award_unlocks) ? q.award_unlocks : [];
+    const unlocks: IAwardUnlocks[] = Array.isArray(q.award_unlocks)
+      ? q.award_unlocks
+      : [];
     const rowCount = Math.max(1, unlocks.length);
+    const href = `/dashboard/awards/unlocks/${q.id}`;
+    const onRowClick = () => router.push(href);
+    const onRowKeyDown = (e: React.KeyboardEvent<HTMLTableRowElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        router.push(href);
+      }
+    };
 
     const first = (
-      <Table.Tr key={`q-${q.id}-row-0`}>
+      <Table.Tr
+        key={`q-${q.id}-row-0`}
+        onClick={onRowClick}
+        onKeyDown={onRowKeyDown}
+        role="link"
+        tabIndex={0}
+        style={{ cursor: "pointer" }}
+        data-href={href}>
         <Table.Td rowSpan={rowCount}>{q.id}</Table.Td>
         <Table.Td rowSpan={rowCount}>{q.name}</Table.Td>
         {unlocks[0] ? (
           <>
             <Table.Td>{unlocks[0].kind}</Table.Td>
             <Table.Td>{unlocks[0].item_name || unlocks[0].bsg_id}</Table.Td>
-            <Table.Td>{unlocks[0]?.extra?.trader_name_tech ?? '-'}</Table.Td>
-            <Table.Td>{unlocks[0]?.extra?.loyalty ?? '-'}</Table.Td>
+            <Table.Td>{unlocks[0]?.extra?.trader_name_tech ?? "-"}</Table.Td>
+            <Table.Td>{unlocks[0]?.extra?.loyalty ?? "-"}</Table.Td>
           </>
         ) : (
           <>
@@ -47,10 +71,10 @@ export default function AwardsUnlocksClient({ quests }: AwardsUnlocksClientProps
       const u = unlocks[i];
       rest.push(
         <Table.Tr key={`q-${q.id}-row-${i}`}>
-          <Table.Td>{u?.kind ?? '-'}</Table.Td>
-          <Table.Td>{u ? (u.item_name || u.bsg_id) : '-'}</Table.Td>
-          <Table.Td>{u?.extra?.trader_name_tech ?? '-'}</Table.Td>
-          <Table.Td>{u?.extra?.loyalty ?? '-'}</Table.Td>
+          <Table.Td>{u?.kind ?? "-"}</Table.Td>
+          <Table.Td>{u ? u.item_name || u.bsg_id : "-"}</Table.Td>
+          <Table.Td>{u?.extra?.trader_name_tech ?? "-"}</Table.Td>
+          <Table.Td>{u?.extra?.loyalty ?? "-"}</Table.Td>
         </Table.Tr>
       );
     }
