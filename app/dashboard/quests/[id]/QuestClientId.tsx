@@ -13,6 +13,7 @@ import {
   Select,
   Textarea,
   Title,
+  FileInput,
 } from "@mantine/core";
 import { IQuest } from "../../../../types/questTypes";
 import { ITrader } from "../../../../types/traderTypes";
@@ -84,6 +85,10 @@ export default function QuestClientId({
     label: m.name,
   }));
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageName, setImageName] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [uploadingImage, setUploadingImage] = useState<boolean>(false);
 
   const form = useForm({
     initialValues: {
@@ -270,6 +275,78 @@ export default function QuestClientId({
     }
     setSelectedMap(null);
   };
+
+  const insertImageTag = () => {
+    if (!imageUrl) return;
+    const token = `[img=${imageUrl}]`;
+    const current = form.values.guides || "";
+    const ta = guidesRef.current;
+    if (
+      ta &&
+      typeof ta.selectionStart === "number" &&
+      typeof ta.selectionEnd === "number"
+    ) {
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const next = current.slice(0, start) + token + current.slice(end);
+      form.setFieldValue("guides", next);
+      requestAnimationFrame(() => {
+        if (guidesRef.current) {
+          const pos = start + token.length;
+          guidesRef.current.selectionStart = pos;
+          guidesRef.current.selectionEnd = pos;
+          guidesRef.current.focus();
+        }
+      });
+    } else {
+      form.setFieldValue("guides", current + token);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!imageFile) return;
+    try {
+      setUploadingImage(true);
+      const fd = new FormData();
+      fd.append("file", imageFile);
+      if (imageName?.trim()) fd.append("name", imageName.trim());
+      const resp = await axios.post("/api/uploads", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const data: any = resp?.data;
+      let url: string | undefined;
+      if (typeof data === "string") {
+        url = data;
+      } else if (data && typeof data === "object") {
+        url =
+          data.url ||
+          data.link ||
+          data.location ||
+          data.path ||
+          data.image_url ||
+          data.file_url ||
+          data?.result?.url ||
+          data?.data?.url ||
+          data?.image?.url;
+      }
+      if (url && typeof url === "string") {
+        // normalize to absolute/relative as is
+        setImageUrl(url);
+        notifications.show({
+          color: "green",
+          title: "Успешно",
+          message: "Картинка загружена",
+        });
+      } else {
+        throw new Error("Не удалось получить ссылку на файл");
+      }
+    } catch (e: any) {
+      const message = e?.response?.data?.detail || e?.message || "Ошибка загрузки";
+      notifications.show({ color: "red", title: "Ошибка", message });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="lg:col-span-2">
@@ -326,6 +403,46 @@ export default function QuestClientId({
             variant="light"
             onClick={insertMapTag}
             disabled={!selectedMap}>
+            Вставить
+          </Button>
+        </Group>
+
+        <Divider my="md" />
+
+        <Group align="end" gap="sm" className="mb-2">
+          <FileInput
+            size="md"
+            label="Загрузка картинки"
+            placeholder="Выберите файл"
+            accept="image/*"
+            value={imageFile}
+            onChange={setImageFile}
+            className="grow"
+          />
+        </Group>
+        <Group align="end" gap="sm" className="mb-2">
+          <Input.Wrapper label="Имя картинки" size="md" className="grow">
+            <Input
+              placeholder="Введите имя (опционально)"
+              value={imageName}
+              onChange={(e) => setImageName(e.currentTarget.value)}
+            />
+          </Input.Wrapper>
+          <Button
+            size="md"
+            variant="light"
+            onClick={handleImageUpload}
+            disabled={!imageFile}
+            loading={uploadingImage}
+          >
+            Загрузить
+          </Button>
+        </Group>
+        <Group align="end" gap="sm" className="mb-2">
+          <Input.Wrapper label="Ссылка" size="md" className="grow">
+            <Input placeholder="Ссылка появится после загрузки" value={imageUrl} readOnly />
+          </Input.Wrapper>
+          <Button size="md" variant="light" onClick={insertImageTag} disabled={!imageUrl}>
             Вставить
           </Button>
         </Group>
