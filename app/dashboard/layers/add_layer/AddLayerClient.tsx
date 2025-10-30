@@ -44,7 +44,7 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
   });
 
   const apiBase = useMemo(
-    () => (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, ""),
+    () => (process.env.NEXT_PUBLIC_FRONT_URL || "").replace(/\/+$/, ""),
     []
   );
   const imgPreviewUrl = useMemo(() => {
@@ -81,9 +81,14 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
       }
       if (!url) throw new Error("Не удалось получить ссылку на изображение");
       form.setFieldValue("image_url", url);
-      notifications.show({ color: "green", title: "Успешно", message: "Картинка загружена" });
+      notifications.show({
+        color: "green",
+        title: "Успешно",
+        message: "Картинка загружена",
+      });
     } catch (e: any) {
-      const message = e?.response?.data?.detail || e?.message || "Ошибка загрузки";
+      const message =
+        e?.response?.data?.detail || e?.message || "Ошибка загрузки";
       notifications.show({ color: "red", title: "Ошибка", message });
     } finally {
       setUploading(false);
@@ -93,17 +98,29 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
   const handleSave = async () => {
     const name = form.values.name.trim();
     if (!name) {
-      notifications.show({ color: "red", title: "Ошибка", message: "Введите название слоя" });
+      notifications.show({
+        color: "red",
+        title: "Ошибка",
+        message: "Введите название слоя",
+      });
       return;
     }
     const mapId = Number(form.values.map_id);
     if (!Number.isFinite(mapId) || mapId <= 0) {
-      notifications.show({ color: "red", title: "Ошибка", message: "Укажите корректный ID карты" });
+      notifications.show({
+        color: "red",
+        title: "Ошибка",
+        message: "Укажите корректный ID карты",
+      });
       return;
     }
     const imageUrl = (form.values.image_url || "").trim();
     if (!imageUrl) {
-      notifications.show({ color: "red", title: "Ошибка", message: "Загрузите или укажите ссылку на картинку" });
+      notifications.show({
+        color: "red",
+        title: "Ошибка",
+        message: "Загрузите или укажите ссылку на картинку",
+      });
       return;
     }
 
@@ -124,7 +141,11 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
         headers: { "Content-Type": "application/json" },
       });
       if (resp.status >= 200 && resp.status < 300) {
-        notifications.show({ color: "green", title: "Успешно", message: "Слой создан" });
+        notifications.show({
+          color: "green",
+          title: "Успешно",
+          message: "Слой создан",
+        });
         router.push(`/dashboard/layers`);
         router.refresh();
       } else {
@@ -132,7 +153,8 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
         throw new Error(detail);
       }
     } catch (e: any) {
-      const message = e?.response?.data?.detail || e?.message || "Ошибка создания слоя";
+      const message =
+        e?.response?.data?.detail || e?.message || "Ошибка создания слоя";
       notifications.show({ color: "red", title: "Ошибка", message });
     }
   };
@@ -152,7 +174,10 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
         <Select
           label="Карта"
           placeholder="Выберите карту"
-          data={(maps || []).map((m) => ({ value: String(m.id), label: `${m.id} — ${m.name}` }))}
+          data={(maps || []).map((m) => ({
+            value: String(m.id),
+            label: `${m.id} — ${m.name}`,
+          }))}
           value={form.values.map_id ? String(form.values.map_id) : null}
           onChange={(v) => form.setFieldValue("map_id", v ? Number(v) : 0)}
           searchable
@@ -160,18 +185,28 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
           size="md"
           className="mb-4"
         />
-        <Input.Wrapper label="Название слоя" withAsterisk size="md" className="mb-4">
+        <Input.Wrapper
+          label="Название слоя"
+          withAsterisk
+          size="md"
+          className="mb-4">
           <Input
             placeholder="Введите название слоя"
             value={form.values.name}
             onChange={(e) => form.setFieldValue("name", e.currentTarget.value)}
           />
         </Input.Wrapper>
-        <Input.Wrapper label="Ссылка на картинку" withAsterisk size="md" className="mb-2">
+        <Input.Wrapper
+          label="Ссылка на картинку"
+          withAsterisk
+          size="md"
+          className="mb-2">
           <Input
             placeholder="Загрузите файл или вставьте ссылку"
             value={form.values.image_url}
-            onChange={(e) => form.setFieldValue("image_url", e.currentTarget.value)}
+            onChange={(e) =>
+              form.setFieldValue("image_url", e.currentTarget.value)
+            }
           />
         </Input.Wrapper>
         <Group align="end" gap="sm" className="mb-6">
@@ -183,7 +218,11 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
             onChange={setFile}
             className="grow"
           />
-          <Button variant="light" onClick={handleUpload} disabled={!file} loading={uploading}>
+          <Button
+            variant="light"
+            onClick={handleUpload}
+            disabled={!file}
+            loading={uploading}>
             Загрузить
           </Button>
         </Group>
@@ -192,13 +231,17 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
           <NumberInput
             label="Ширина (px)"
             value={form.values.width_px}
-            onChange={(v: any) => form.setFieldValue("width_px", Number(v) || 4096)}
+            onChange={(v: any) =>
+              form.setFieldValue("width_px", Number(v) || 4096)
+            }
             size="md"
           />
           <NumberInput
             label="Высота (px)"
             value={form.values.height_px}
-            onChange={(v: any) => form.setFieldValue("height_px", Number(v) || 4096)}
+            onChange={(v: any) =>
+              form.setFieldValue("height_px", Number(v) || 4096)
+            }
             size="md"
           />
         </Group>
@@ -228,14 +271,18 @@ export default function AddLayerClient({ maps }: AddLayerClientProps) {
           <NumberInput
             label="Порядок"
             value={form.values.order_index}
-            onChange={(v: any) => form.setFieldValue("order_index", Number(v) || 0)}
+            onChange={(v: any) =>
+              form.setFieldValue("order_index", Number(v) || 0)
+            }
             size="md"
             className="grow"
           />
           <Switch
             label="Виден по умолчанию"
             checked={form.values.visible_by_default}
-            onChange={(e) => form.setFieldValue("visible_by_default", e.currentTarget.checked)}
+            onChange={(e) =>
+              form.setFieldValue("visible_by_default", e.currentTarget.checked)
+            }
           />
         </Group>
 
