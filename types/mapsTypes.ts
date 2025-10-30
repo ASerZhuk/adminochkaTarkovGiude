@@ -19,7 +19,7 @@ export interface IMaps {
     pmc_range: string,
     raid_time: number,
     seo_link: string,
+    img?: string | null,
     layers: ILayers[]
 }
-
 
