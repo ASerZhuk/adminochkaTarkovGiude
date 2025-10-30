@@ -40,7 +40,7 @@ export default function MapsClient({ mapsData }: MapsClientProps) {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>ID</Table.Th>
-            <Table.Th>Название квеста</Table.Th>
+            <Table.Th>Название карты</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
