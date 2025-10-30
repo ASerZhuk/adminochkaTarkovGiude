@@ -13,7 +13,10 @@ export default function QuestsClient({ quests }: QuestsClientProps) {
   const router = useRouter();
   const [qFilter, setQFilter] = useState("");
   const filtered = useMemo(
-    () => (quests ?? []).filter((q) => q.name.toLowerCase().includes(qFilter.toLowerCase())),
+    () =>
+      (quests ?? []).filter((q) =>
+        q.name.toLowerCase().includes(qFilter.toLowerCase())
+      ),
     [quests, qFilter]
   );
 

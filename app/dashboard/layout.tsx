@@ -53,14 +53,33 @@ export default function DashboardLayout({
       <AppShell.Navbar>
         <AppShell.Section grow my="md" component={ScrollArea} px="md">
           {NaviLink.map((nav, index) => {
-            const isActive =
-              pathname === nav.href || pathname.startsWith(`${nav.href}/`);
+            const isActivePath = (href: string) =>
+              pathname === href || pathname.startsWith(`${href}/`);
+
+            if (nav.children && nav.children.length > 0) {
+              const anyActive = nav.children.some((ch) => isActivePath(ch.href));
+              return (
+                <NavLink key={index} label={nav.label} defaultOpened={anyActive} active={anyActive}>
+                  {nav.children.map((ch, i) => (
+                    <NavLink
+                      key={`${index}-${i}`}
+                      component={Link}
+                      href={ch.href}
+                      label={ch.label}
+                      active={isActivePath(ch.href)}
+                    />)
+                  )}
+                </NavLink>
+              );
+            }
+
+            const isActive = nav.href ? isActivePath(nav.href) : false;
             return (
               <NavLink
                 key={index}
-                component={Link}
+                component={nav.href ? (Link as any) : undefined}
                 href={nav.href}
-                label={(nav as any).label}
+                label={nav.label}
                 active={isActive}
               />
             );
