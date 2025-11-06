@@ -36,6 +36,7 @@ export const NaviLink: NaviItem[] = [
       { href: "/dashboard/maps", label: "Карты" },
       { href: "/dashboard/layers", label: "Слои" },
       { href: "/dashboard/map-icons", label: "Иконки" },
+      { href: "/dashboard/markers", label: "Маркеры" },
     ],
   },
   {
