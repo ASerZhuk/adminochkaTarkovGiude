@@ -64,14 +64,10 @@ export default function MarkersLayerClient({ layer, icons, markers }: Props) {
     return `${apiImgBase}/${raw}`;
   }, [layer?.image_url, apiImgBase]);
 
-  // Используем фактический размер изображения (naturalWidth/Height),
-  // чтобы координаты совпадали с фронтом; иначе берём width_px/height_px
-  const [naturalSize, setNaturalSize] = useState<{
-    w: number;
-    h: number;
-  } | null>(null);
-  const baseW = naturalSize?.w || layer?.width_px || 1;
-  const baseH = naturalSize?.h || layer?.height_px || 1;
+  // Фиксированные размеры слоя берём из метаданных (width_px/height_px),
+  // чтобы избежать скачков при загрузке изображения (SSR/CSR, dev/prod)
+  const baseW = layer?.width_px || 1;
+  const baseH = layer?.height_px || 1;
 
   const selectedIcon = useMemo(() => {
     if (selectedIconId == null) return null;
@@ -294,15 +290,10 @@ export default function MarkersLayerClient({ layer, icons, markers }: Props) {
                   top: 0,
                   width: "100%",
                   height: "100%",
-                  objectFit: "contain",
+                  // Подгоняем изображение под точные размеры слоя
+                  objectFit: "fill",
                 }}
                 onClick={handleImageClick}
-                onLoad={() => {
-                  const el = imgRef.current;
-                  if (el && el.naturalWidth && el.naturalHeight) {
-                    setNaturalSize({ w: el.naturalWidth, h: el.naturalHeight });
-                  }
-                }}
               />
               {/* Existing markers */}
               {(markersState || [])
