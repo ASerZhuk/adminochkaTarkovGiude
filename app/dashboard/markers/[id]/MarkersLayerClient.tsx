@@ -42,17 +42,19 @@ export default function MarkersLayerClient({ layer, icons, markers }: Props) {
     setMarkersState(markers || []);
   }, [markers, layer?.id]);
 
-  // База для картинок и спрайтов.
-  // Если в env указан внешний API и это не localhost/127.0.0.1 — используем его.
-  // Иначе на клиенте используем текущее origin (например, https://tarkovguide.ru).
+  // База для картинок/спрайтов:
+  // 1) Если задана NEXT_PUBLIC_IMAGE_URL — используем её
+  // 2) Иначе если задана NEXT_PUBLIC_API_URL — используем её
+  // 3) Иначе (оба не заданы) — используем текущее origin (dev/prod)
   const apiImgBase = useMemo(() => {
-    const envBase = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
-    const isLocal = /^(?:https?:\/\/)?(?:localhost|127\.0\.0\.1)(?::\d+)?$/i.test(envBase);
-    if (typeof window !== "undefined") {
-      const origin = window.location.origin.replace(/\/+$/, "");
-      return envBase && !isLocal ? envBase : origin;
-    }
-    return envBase || "";
+    const imgBase = (process.env.NEXT_PUBLIC_IMAGE_URL || "").replace(
+      /\/+$/,
+      ""
+    );
+    if (imgBase) return imgBase;
+    if (typeof window !== "undefined")
+      return window.location.origin.replace(/\/+$/, "");
+    return "";
   }, []);
   const imageUrl = useMemo(() => {
     const raw = layer?.image_url || "";
@@ -106,7 +108,10 @@ export default function MarkersLayerClient({ layer, icons, markers }: Props) {
     const w = selectedIcon.size_w || 0;
     const h = selectedIcon.size_h || 0;
     // переводим из координаты центра в координату левого-верхнего угла
-    const leftPx = Math.max(0, Math.min(baseW - w, Math.round(posPx.x - w / 2)));
+    const leftPx = Math.max(
+      0,
+      Math.min(baseW - w, Math.round(posPx.x - w / 2))
+    );
     const topPx = Math.max(0, Math.min(baseH - h, Math.round(posPx.y - h / 2)));
     const leftPct = (leftPx / baseW) * 100;
     const topPct = (topPx / baseH) * 100;

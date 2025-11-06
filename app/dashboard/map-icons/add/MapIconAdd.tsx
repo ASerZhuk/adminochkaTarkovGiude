@@ -30,10 +30,14 @@ export default function MapIconAdd() {
     },
   });
 
-  const apiImgBase = useMemo(
-    () => (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, ""),
-    []
-  );
+  const apiImgBase = useMemo(() => {
+    const imgBase = (process.env.NEXT_PUBLIC_IMAGE_URL || "").replace(/\/+$/, "");
+    if (imgBase) return imgBase;
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
+    if (apiBase) return apiBase;
+    if (typeof window !== 'undefined') return window.location.origin.replace(/\/+$/, "");
+    return "";
+  }, []);
 
   function buildPreviewUrl(raw: string) {
     if (!raw) return "";
