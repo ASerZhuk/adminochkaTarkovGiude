@@ -42,14 +42,18 @@ export default function MarkersLayerClient({ layer, icons, markers }: Props) {
     setMarkersState(markers || []);
   }, [markers, layer?.id]);
 
-  const apiImgBase = useMemo(
-    () =>
-      (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(
-        /\/+$/,
-        ""
-      ),
-    []
-  );
+  // База для картинок и спрайтов.
+  // Если в env указан внешний API и это не localhost/127.0.0.1 — используем его.
+  // Иначе на клиенте используем текущее origin (например, https://tarkovguide.ru).
+  const apiImgBase = useMemo(() => {
+    const envBase = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
+    const isLocal = /^(?:https?:\/\/)?(?:localhost|127\.0\.0\.1)(?::\d+)?$/i.test(envBase);
+    if (typeof window !== "undefined") {
+      const origin = window.location.origin.replace(/\/+$/, "");
+      return envBase && !isLocal ? envBase : origin;
+    }
+    return envBase || "";
+  }, []);
   const imageUrl = useMemo(() => {
     const raw = layer?.image_url || "";
     if (!raw) return "";
