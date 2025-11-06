@@ -35,6 +35,7 @@ export const NaviLink: NaviItem[] = [
     children: [
       { href: "/dashboard/maps", label: "Карты" },
       { href: "/dashboard/layers", label: "Слои" },
+      { href: "/dashboard/map-icons", label: "Иконки" },
     ],
   },
   {
